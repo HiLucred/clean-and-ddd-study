@@ -11,7 +11,7 @@ export class AnswerQuestionUseCase {
   constructor(private answerRepository: AnswerRepository) {}
 
   async execute({ author, questionId, content }: AnswerQuestionUseCaseRequest) {
-    const answer = new Answer({ author, questionId, content })
+    const answer = 
     await this.answerRepository.create(answer)
     return answer
   }
