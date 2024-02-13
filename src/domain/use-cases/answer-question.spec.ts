@@ -12,7 +12,7 @@ const fakeAnswerRepository: AnswerRepository = {
 it("Shoud be able to answer a question", async () => {
   const answerQuestionUseCase = new AnswerQuestionUseCase(fakeAnswerRepository)
   const response = await answerQuestionUseCase.execute({
-    author: 'Gabriel',
+    instructorId: 'Gabriel',
     questionId: 'random-id',
     content: 'Conteúdo da pergunta...'
   })
