@@ -12,7 +12,13 @@ interface GetQuestionBySlugUseCaseResponse {
 export class GetQuestionBySlugUseCase {
   constructor(private questionsRepository: QuestionRepository) {}
 
-  async execute({}: GetQuestionBySlugUseCaseRequest): Promise<GetQuestionBySlugUseCaseResponse> {
-    
+  async execute({ slug }: GetQuestionBySlugUseCaseRequest): Promise<GetQuestionBySlugUseCaseResponse> {
+    const question = await this.questionsRepository.findBySlug(slug)
+
+    if (!question) {
+      throw new Error("Slug not found")
+    }
+
+    return { question }
   }
 }
