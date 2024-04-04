@@ -9,16 +9,15 @@ describe('Answer Question', () => {
     inMemoryAnswerRepository = new InMemoryAnswersRepository()
     sut = new AnswerQuestionUseCase(inMemoryAnswerRepository)
   })
-  
+
   it('Shoud be able to answer a question', async () => {
     const { answer } = await sut.execute({
-      instructorId: 'fakeId',
-      questionId: 'randomId',
-      content: 'Conteúdo da pergunta...',
+      instructorId: 'instructorId',
+      questionId: 'questionId',
+      content: 'Answer content...',
     })
-    
+
     expect(answer.id).toBeTruthy()
     expect(inMemoryAnswerRepository.items[0].id).toEqual(answer.id)
   })
 })
-

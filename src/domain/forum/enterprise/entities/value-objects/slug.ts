@@ -7,7 +7,7 @@ export class Slug {
 
   static create(value: string) {
     return new Slug(value)
-  } 
+  }
 
   static createFromText(value: string) {
     const slugText = value
