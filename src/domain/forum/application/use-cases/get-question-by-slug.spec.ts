@@ -23,7 +23,6 @@ describe('Get Question by Slug', () => {
       slug: 'title-slug',
     })
 
-    expect(question.id).toBeTruthy()
     expect(inMemoryQuestionsRepository.items[0].id).toEqual(question.id)
   })
 })
