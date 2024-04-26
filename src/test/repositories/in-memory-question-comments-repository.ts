@@ -19,6 +19,14 @@ export class InMemoryQuestionCommentsRepository
     this.items.splice(questionCommentId)
   }
 
+  async deleteManyByQuestionId(questionId: string) {
+    const itemIndex = this.items.findIndex(
+      (item) => item.id.toString() === questionId,
+    )
+
+    this.items.splice(itemIndex)
+  }
+
   async findById(questionCommentId: string) {
     const questionComment = this.items.find(
       (item) => item.id.toString() === questionCommentId,

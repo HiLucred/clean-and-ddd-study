@@ -12,7 +12,7 @@ describe('Fetch Answer Comments', () => {
     sut = new FetchAnswerCommentsUseCase(inMemoryAnswerCommentsRepository)
   })
 
-  it('Should be able to fetch answer comments', async () => {
+  it('should be able to fetch answer comments', async () => {
     const newAnswer = makeAnswer({}, 'question-id')
 
     // Create 3 answer comments
@@ -22,15 +22,18 @@ describe('Fetch Answer Comments', () => {
       )
     }
 
-    const { answerComments } = await sut.execute({
+    const result = await sut.execute({
       answerCommentId: newAnswer.id.toString(),
       page: 1,
     })
 
-    expect(answerComments).toHaveLength(3)
+    expect(result.isRight()).toBe(true)
+    if (result.isRight()) {
+      expect(result.value.answerComments).toHaveLength(3)
+    }
   })
 
-  it('Should be able to fetch paginated answer comments', async () => {
+  it('should be able to fetch paginated answer comments', async () => {
     const newAnswer = makeAnswer({}, 'question-id')
 
     // Create 23 answer comments
@@ -40,11 +43,14 @@ describe('Fetch Answer Comments', () => {
       )
     }
 
-    const { answerComments } = await sut.execute({
+    const result = await sut.execute({
       answerCommentId: newAnswer.id.toString(),
       page: 2,
     })
 
-    expect(answerComments).toHaveLength(3)
+    expect(result.isRight()).toBe(true)
+    if (result.isRight()) {
+      expect(result.value.answerComments).toHaveLength(3)
+    }
   })
 })

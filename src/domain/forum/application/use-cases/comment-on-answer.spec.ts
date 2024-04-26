@@ -11,17 +11,20 @@ describe('Comment on Answer', () => {
     sut = new CommentOnAnswerUseCase(inMemoryAnswerComments)
   })
 
-  it('shoud be able to comment on answer', async () => {
+  it('should be able to comment on answer', async () => {
     const newAnswer = makeAnswer({}, 'question-id')
 
-    const { answerComment } = await sut.execute({
+    const result = await sut.execute({
       answerId: newAnswer.id.toString(),
       authorId: 'author-id',
       content: 'Answer comment content...',
     })
 
-    await inMemoryAnswerComments.create(answerComment)
-
-    expect(inMemoryAnswerComments.items[0]).toEqual(answerComment)
+    expect(result.isRight()).toBe(true)
+    if (result.isRight()) {
+      expect(inMemoryAnswerComments.items[0]).toEqual(
+        result.value.answerComment,
+      )
+    }
   })
 })

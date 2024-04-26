@@ -1,39 +1,41 @@
 import { DeleteQuestionCommentUseCase } from './delete-question-comment'
 import { InMemoryQuestionCommentsRepository } from '@/test/repositories/in-memory-question-comments-repository'
 import { makeQuestionComment } from '@/test/factories/make-question-comment'
+import { NotAllowedError } from '@/core/errors/errors/not-allowed-error'
 
 let inMemoryQuestionCommentsRepository: InMemoryQuestionCommentsRepository
 let sut: DeleteQuestionCommentUseCase
 
 describe('Delete Question Comment', () => {
   beforeEach(() => {
-    inMemoryQuestionCommentsRepository = new InMemoryQuestionCommentsRepository()
+    inMemoryQuestionCommentsRepository =
+      new InMemoryQuestionCommentsRepository()
     sut = new DeleteQuestionCommentUseCase(inMemoryQuestionCommentsRepository)
   })
 
-  it('shoud be able to delete question comment', async () => {
-    const questionComment = makeQuestionComment()
+  it('should be able to delete question comment', async () => {
+    const newQuestionComment = makeQuestionComment()
+    await inMemoryQuestionCommentsRepository.create(newQuestionComment)
 
-    await inMemoryQuestionCommentsRepository.create(questionComment)
-
-    await sut.execute({
-      questionCommentId: questionComment.id.toString(),
-      authorId: questionComment.authorId.toString(),
+    const result = await sut.execute({
+      questionCommentId: newQuestionComment.id.toString(),
+      authorId: newQuestionComment.authorId.toString(),
     })
 
+    expect(result.isRight()).toBe(true)
     expect(inMemoryQuestionCommentsRepository.items).toHaveLength(0)
   })
 
-  it('shoud not be able to delete question comment from another user', async () => {
-    const questionComment = makeQuestionComment()
+  it('should not be able to delete question comment from another user', async () => {
+    const newQuestionComment = makeQuestionComment()
+    await inMemoryQuestionCommentsRepository.create(newQuestionComment)
 
-    await inMemoryQuestionCommentsRepository.create(questionComment)
+    const result = await sut.execute({
+      questionCommentId: newQuestionComment.id.toString(),
+      authorId: 'author-id',
+    })
 
-    expect(() => {
-      return sut.execute({
-        questionCommentId: questionComment.id.toString(),
-        authorId: 'author-id',
-      })
-    }).rejects.toBeInstanceOf(Error)
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(NotAllowedError)
   })
 })

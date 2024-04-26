@@ -2,17 +2,23 @@ import { makeQuestion } from '@/test/factories/make-question'
 import { InMemoryAnswersRepository } from '@/test/repositories/in-memory-answers-repository'
 import { FetchQuestionAnswersUseCase } from './fetch-question-answers'
 import { makeAnswer } from '@/test/factories/make-answer'
+import { InMemoryAnswerAttachmentsRepository } from '@/test/repositories/in-memory-answer-attachments-repository'
 
+let inMemoryAnswerAttachmentsRepository: InMemoryAnswerAttachmentsRepository
 let inMemoryAnswersRepository: InMemoryAnswersRepository
 let sut: FetchQuestionAnswersUseCase
 
 describe('Fetch Question Answers', () => {
   beforeEach(() => {
-    inMemoryAnswersRepository = new InMemoryAnswersRepository()
+    inMemoryAnswerAttachmentsRepository =
+      new InMemoryAnswerAttachmentsRepository()
+    inMemoryAnswersRepository = new InMemoryAnswersRepository(
+      inMemoryAnswerAttachmentsRepository,
+    )
     sut = new FetchQuestionAnswersUseCase(inMemoryAnswersRepository)
   })
 
-  it('Should be able to fetch question answers', async () => {
+  it('should be able to fetch question answers', async () => {
     const newQuestion = makeQuestion()
 
     // Create 3 answers
@@ -22,15 +28,18 @@ describe('Fetch Question Answers', () => {
       )
     }
 
-    const { answers } = await sut.execute({
+    const result = await sut.execute({
       questionId: newQuestion.id.toString(),
       page: 1,
     })
 
-    expect(answers).toHaveLength(3)
+    expect(result.isRight()).toBe(true)
+    if (result.isRight()) {
+      expect(result.value.answers).toHaveLength(3)
+    }
   })
 
-  it('Should be able to fetch paginated recent questions', async () => {
+  it('should be able to fetch paginated recent questions', async () => {
     const newQuestion = makeQuestion()
 
     // Create 23 questions
@@ -40,11 +49,14 @@ describe('Fetch Question Answers', () => {
       )
     }
 
-    const { answers } = await sut.execute({
+    const result = await sut.execute({
       questionId: newQuestion.id.toString(),
       page: 2,
     })
 
-    expect(answers).toHaveLength(3)
+    expect(result.isRight()).toBe(true)
+    if (result.isRight()) {
+      expect(result.value.answers).toHaveLength(3)
+    }
   })
 })
